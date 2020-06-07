@@ -6,7 +6,7 @@ function App() {
     <div id="appContainer" className="container">
       <div className="App">
         <h1 id="appHeader">Pomodro Clock</h1>
-        <div id="timer-label">New Session</div>
+        <h3 id="timer-label">New Session</h3>
         <div id="time-left">25:00</div>
         <div className="row">
           <i id="start_stop" class="far fa-play-circle fa-2x"></i>
@@ -30,11 +30,17 @@ function App() {
             <div id="break-length" className="timeLengthValue">
               5
             </div>
-            <i id="break-increment" className="fas fa-arrow-circle-up"></i>
-            <i id="break-decrement" className="fas fa-arrow-circle-down"></i>
+            <i
+              id="break-increment"
+              className="fas fa-arrow-circle-up increment"
+            ></i>
+            <i
+              id="break-decrement"
+              className="fas fa-arrow-circle-down decrement"
+            ></i>
           </div>
         </div>
-        <div className="card-footer">by Mahmoud Gatfi</div>
+        <div class="text-muted">by Mahmoud Gatfi</div>
       </div>
     </div>
   );

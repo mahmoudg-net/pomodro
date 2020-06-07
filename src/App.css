@@ -14,10 +14,32 @@
   display: grid;
   grid-template-rows: 1fr 2fr 2fr;
   grid-template-columns: 3fr 1fr;
+  padding: 5px;
 }
 .timeLengthLabel {
   grid-area: 1/1/2/3;
 }
 .timeLengthValue {
   grid-area: 2/1/4/2;
+  font-size: 3.5rem;
+  justify-self: center;
+  align-self: center;
+}
+
+.increment {
+  align-self: end;
+  margin: 3px;
+}
+.decrement {
+  align-self: start;
+  margin: 3px;
+}
+
+#time-left {
+  font-size: 4em;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 5px;
+  font-family: monospace;
+  background-color: rgb(192, 192, 192);
 }
