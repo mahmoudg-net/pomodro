@@ -6,12 +6,13 @@ import {
   RESET,
   START,
   PAUSE,
+  DECREASE_REMAINING_TIME,
 } from "./actions";
 
-const DEFAULT_WORK_LENGTH = 25;
-const DEFAULT_BREAK_LENGTH = 5;
-const MAX_LENGTH = 60;
-const MIN_LENGTH = 1;
+const DEFAULT_WORK_LENGTH = 1500;
+const DEFAULT_BREAK_LENGTH = 300;
+const MAX_LENGTH = 3600;
+const MIN_LENGTH = 60;
 
 const initialState = {
   clockStatus: WORK,
@@ -20,7 +21,6 @@ const initialState = {
   remainingTime: DEFAULT_WORK_LENGTH,
   isStarted: false,
   isPaused: false,
-  timer: null,
 };
 
 const updateDuration = (
@@ -32,22 +32,22 @@ const updateDuration = (
   if (whatToUpdate === WORK) {
     return {
       workLength: doIncrease
-        ? stateWorkLength < 60
-          ? stateWorkLength + 1
-          : 60
-        : stateWorkLength > 1
-        ? stateWorkLength - 1
-        : 1,
+        ? stateWorkLength < MAX_LENGTH
+          ? stateWorkLength + 60
+          : MAX_LENGTH
+        : stateWorkLength > MIN_LENGTH + 60
+        ? stateWorkLength - 60
+        : MIN_LENGTH,
     };
   } else {
     return {
       breakLength: doIncrease
-        ? stateBreakLength < 60
-          ? stateBreakLength + 1
-          : 60
-        : stateBreakLength > 1
-        ? stateBreakLength - 1
-        : 1,
+        ? stateBreakLength < MAX_LENGTH
+          ? stateBreakLength + 60
+          : MAX_LENGTH
+        : stateBreakLength > MIN_LENGTH + 60
+        ? stateBreakLength - 60
+        : MIN_LENGTH,
     };
   }
 };
@@ -55,7 +55,7 @@ const updateDuration = (
 export const reducers = (state = initialState, action) => {
   switch (action.type) {
     case INCREASE_DURATION:
-      return Object.assign(
+      let ret = Object.assign(
         {},
         state,
         updateDuration(
@@ -65,8 +65,12 @@ export const reducers = (state = initialState, action) => {
           true
         )
       );
+      if (state.clockStatus === WORK && !state.isStarted) {
+        ret.remainingTime = ret.workLength;
+      }
+      return ret;
     case DECREASE_DURATION:
-      return Object.assign(
+      const retd = Object.assign(
         {},
         state,
         updateDuration(
@@ -76,32 +80,53 @@ export const reducers = (state = initialState, action) => {
           false
         )
       );
+      if (state.clockStatus === WORK && !state.isStarted) {
+        retd.remainingTime = retd.workLength;
+      }
+      return retd;
     case RESET:
-      return initialState;
+      return Object.assign({}, initialState);
     case START:
+      let length = state.remainingTime;
+      let clockStatus = state.clockStatus;
       if (!state.isStarted) {
-        const timer = setInterval(
-          (s) => {
-            return {
-              ...s,
-              ...{ remainingTime: s.remainingTime - 1 },
-            };
-          },
-          1000,
-          state
-        );
+        length = state.workLength;
+        clockStatus = WORK;
+      }
+      if (!state.isStarted || state.isPaused) {
         return Object.assign({}, state, {
-          timer: timer,
           isStarted: true,
+          isPaused: false,
+          clockStatus: clockStatus,
+          remainingTime: length,
         });
       }
       return state;
     case PAUSE:
-      clearInterval(state.timer);
       return {
         ...state,
-        ...{ timer: null, isPaused: true },
+        ...{ isPaused: true },
       };
+    case DECREASE_REMAINING_TIME:
+      if (state.isStarted && !state.isPaused) {
+        const toReturn = {
+          ...state,
+          ...{
+            remainingTime:
+              state.remainingTime > 0
+                ? state.remainingTime - 1
+                : state.remainingTime,
+          },
+        };
+        if (state.remainingTime === 0) {
+          toReturn.clockStatus = state.clockStatus === WORK ? BREAK : WORK;
+          toReturn.remainingTime =
+            state.clockStatus === WORK ? state.breakLength : state.workLength;
+        }
+        return toReturn;
+      } else {
+        return state;
+      }
     default:
       return state;
   }

@@ -1,7 +1,10 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import WorkOrBreak from "./componenets/workOrBreak";
+import SessionInfo from "./componenets/sessionInfo";
+import ActionButtons from "./componenets/actionButtons";
+import SessionDuration from "./componenets/sessionDuration";
+import { WORK, BREAK } from "./redux/actions";
 import "./App.css";
 
 class Presentation extends React.Component {
@@ -10,42 +13,21 @@ class Presentation extends React.Component {
       <div id="appContainer" className="container">
         <div className="App">
           <h1 id="appHeader">Pomodro Clock</h1>
-          <WorkOrBreak />
-          <div id="time-left">25:00</div>
+          <SessionInfo />
+          <ActionButtons />
           <div className="row">
-            <i id="start_stop" class="far fa-play-circle fa-2x"></i>
-            <i id="reset" class="fas fa-power-off fa-2x"></i>
-          </div>
-          <div className="row">
-            <div className="card timeLength">
-              <div id="session-label" className="timeLengthLabel">
-                Session length
-              </div>
-              <div id="session-length" className="timeLengthValue">
-                25
-              </div>
-              <i id="session-increment" className="fas fa-arrow-circle-up"></i>
-              <i
-                id="session-decrement"
-                className="fas fa-arrow-circle-down"
-              ></i>
-            </div>
-            <div className="card timeLength">
-              <div id="break-label" className="timeLengthLabel">
-                Break length
-              </div>
-              <div id="break-length" className="timeLengthValue">
-                5
-              </div>
-              <i
-                id="break-increment"
-                className="fas fa-arrow-circle-up increment"
-              ></i>
-              <i
-                id="break-decrement"
-                className="fas fa-arrow-circle-down decrement"
-              ></i>
-            </div>
+            <SessionDuration
+              sessionLabel={WORK}
+              idLabel="session-label"
+              idLength="session-length"
+              incrementLabel="session"
+            />
+            <SessionDuration
+              sessionLabel={BREAK}
+              idLabel="break-label"
+              idLength="break-length"
+              incrementLabel="break"
+            />
           </div>
           <div class="text-muted">by Mahmoud Gatfi</div>
         </div>
